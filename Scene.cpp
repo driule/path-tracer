@@ -22,7 +22,7 @@ void Scene::render(int row)
 		vec4 color;
 		if (x < SCRWIDTH / 2)
 		{
-			color = this->basicTrace(ray, 0);
+			color = this->basicSample(ray, 0);
 		}
 		else
 		{
@@ -43,7 +43,7 @@ void Scene::render(int row)
 void Scene::increaseAccumulator()
 {
 	this->accumulatorCounter++;
-	this->inversedAccumulatorCounter = 1.0f / (float)this->accumulatorCounter;
+	this->inversedAccumulatorCounter = 1.0f / this->accumulatorCounter;
 }
 
 void Scene::resetAccumulator()
@@ -56,7 +56,7 @@ void Scene::resetAccumulator()
 	this->accumulatorCounter = 0;
 }
 
-vec4 Scene::basicTrace(Ray* ray, int depth)
+vec4 Scene::basicSample(Ray* ray, int depth)
 {
 	depth += 1;
 	if (depth > 5) return BGCOLOR;
@@ -98,7 +98,7 @@ vec4 Scene::basicTrace(Ray* ray, int depth)
 		Ray* diffuseReflectionRay = new Ray(hitPoint + direction * EPSILON, direction);
 
 		vec4 BRDF = material->color * INVERSEPI;
-		vec4 bounceRayColor = this->basicTrace(diffuseReflectionRay, depth) * dot(diffuseReflectionRay->direction, N);
+		vec4 bounceRayColor = this->basicSample(diffuseReflectionRay, depth) * dot(diffuseReflectionRay->direction, N);
 
 		diffuseColor = 2 * PI * BRDF * bounceRayColor;
 
@@ -109,7 +109,7 @@ vec4 Scene::basicTrace(Ray* ray, int depth)
 	if (material->type == mirror)
 	{
 		Ray* reflectionRay = computeReflectionRay(ray);
-		vec4 reflectionColor = this->basicTrace(reflectionRay, depth);
+		vec4 reflectionColor = this->basicSample(reflectionRay, depth);
 		delete reflectionRay;
 
 		return color + reflectionColor;
@@ -124,11 +124,11 @@ vec4 Scene::basicTrace(Ray* ray, int depth)
 		}
 		else
 		{
-			color += this->basicTrace(refractionRay, depth);
+			color += this->basicSample(refractionRay, depth);
 		}
 
 		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->basicTrace(reflectionRay, depth);
+		vec4 reflectionColor = this->basicSample(reflectionRay, depth);
 
 		delete refractionRay;
 		delete reflectionRay;
@@ -426,7 +426,11 @@ void Scene::clear()
 
 	this->models.clear();
 
-	this->skydome = NULL;
+	if (this->skydomeLoaded)
+	{
+		delete[] this->skydome->buffer;
+		delete this->skydome;
+	}
 	this->skydomeLoaded = false;
 
 	this->resetAccumulator();

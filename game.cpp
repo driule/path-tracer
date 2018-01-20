@@ -84,46 +84,6 @@ void Game::Tick( float deltaTime )
 		}
 	}
 
-	// move models
-	/*if (sceneId == 2)
-	{
-		if (frame <= 10)
-		{
-			for (int i = 0; i < 10; i++)
-			{
-				if (i % 2 == 0) scene->translateModel(i, vec3(0, 1, 0));
-				else scene->translateModel(i, vec3(0, -1, 0));
-			}
-		}
-		else if (frame > 10 && frame <= 20)
-		{
-			for (int i = 0; i < 10; i++)
-			{
-				if (i % 2 == 0) scene->translateModel(i, vec3(0, -1, 0));
-				else scene->translateModel(i, vec3(0, 1, 0));
-			}
-		}
-
-		if (frame > 20) frame = 0;
-	}
-
-	if (sceneId == 0)
-	{
-		if (frame <= 10)
-		{
-			scene->translateModel(0, vec3(1, 0, 1));
-			scene->translateModel(2, vec3(-1, 0, -1));
-		}
-		else if (frame > 10 && frame <= 20)
-		{
-
-			scene->translateModel(0, vec3(-1, 0, -1));
-			scene->translateModel(2, vec3(1, 0, 1));
-		}
-
-		if (frame > 20) frame = 0;
-	}*/
-
 	// calculate frame
 	frame++;
 
