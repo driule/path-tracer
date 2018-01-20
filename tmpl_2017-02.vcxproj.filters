@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="surface.cpp">
+      <Filter>template code</Filter>
+    </ClCompile>
+    <ClCompile Include="threads.cpp">
+      <Filter>template code</Filter>
+    </ClCompile>
+    <ClCompile Include="template.cpp">
+      <Filter>template code</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Primitives.cpp" />
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="LightSources.cpp" />
+    <ClCompile Include="quarticsolver.cpp" />
+    <ClCompile Include="BVH.cpp">
+      <Filter>AccelerationStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="BVHNode.cpp">
+      <Filter>AccelerationStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="TopBVH.cpp">
+      <Filter>AccelerationStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>AccelerationStructure</Filter>
+    </ClCompile>
+    <ClCompile Include="HDRBitmap.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game.h" />
+    <ClInclude Include="surface.h">
+      <Filter>template code</Filter>
+    </ClInclude>
+    <ClInclude Include="threads.h">
+      <Filter>template code</Filter>
+    </ClInclude>
+    <ClInclude Include="template.h">
+      <Filter>template code</Filter>
+    </ClInclude>
+    <ClInclude Include="precomp.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Primitives.h" />
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="LightSources.h" />
+    <ClInclude Include="quarticsolver.h" />
+    <ClInclude Include="BVH.h">
+      <Filter>AccelerationStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="BVHNode.h">
+      <Filter>AccelerationStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="TopBVH.h">
+      <Filter>AccelerationStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>AccelerationStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="HDRBitmap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="template code">
+      <UniqueIdentifier>{bf32dd6e-4be7-4889-8ac6-49e7ee163c40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AccelerationStructure">
+      <UniqueIdentifier>{ebce198a-df0d-4837-90d7-b80d91d20194}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="_readme.txt">
+      <Filter>template code</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
