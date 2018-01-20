@@ -10,6 +10,11 @@ Scene::Scene(Surface* screen)
 	this->skydomeLoaded = false;
 
 	this->resetAccumulator();
+
+	// set up random numbers generator
+	this->randomNumbersGenerator = std::mt19937(
+		std::chrono::system_clock::now().time_since_epoch().count()
+	);
 }
 
 void Scene::render(int row)
@@ -219,7 +224,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	int randomLightIndex = rand() % this->lightSources.size();
 	LightSource* randomLight = this->lightSources[randomLightIndex];
 
-	vec3 lightDirection = randomLight->getRandomPointOnLight() - hitPoint;
+	vec3 lightDirection = randomLight->getRandomPointOnLight(this->randomNumbersGenerator) - hitPoint;
 	float distanceToLightSquared = lightDirection.sqrLentgh();
 	lightDirection = normalize(lightDirection);
 
@@ -260,13 +265,9 @@ Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
 	vec3 hitPoint = ray->origin + ray->t * ray->direction;
 	vec3 N = this->primitives[ray->intersectedObjectId]->getNormal(hitPoint);
 
-	// set up random number generators
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	std::mt19937 generator(seed);
-	std::uniform_real_distribution<double> uniform01(0.0, 1.0);
-
-	float random1 = uniform01(generator); //((float)rand() / (RAND_MAX));
-	float random2 = uniform01(generator); // ((float)rand() / (RAND_MAX));
+	std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
+	float random1 = uniformGenerator01(this->randomNumbersGenerator);
+	float random2 = uniformGenerator01(this->randomNumbersGenerator);
 
 	float angle = 2 * PI * random2;
 	float r = sqrt(1 - random1 * random1);

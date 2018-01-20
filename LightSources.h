@@ -11,7 +11,7 @@ namespace Tmpl8 {
 		int intensity;
 
 		virtual void intersect(Ray* ray) = 0;
-		virtual vec3 getRandomPointOnLight() = 0;
+		virtual vec3 getRandomPointOnLight(std::mt19937 randomNumbersGenerator) = 0;
 		virtual vec3 getNormal(vec3 point) = 0;
 		virtual float getArea() = 0;
 	};
@@ -22,7 +22,7 @@ namespace Tmpl8 {
 		DirectLight(vec3 position, vec4 color, int intensity);
 
 		void intersect(Ray* ray);
-		vec3 getRandomPointOnLight();
+		vec3 getRandomPointOnLight(std::mt19937 randomNumbersGenerator);
 		vec3 getNormal(vec3 point);
 		float getArea();
 	};
@@ -33,7 +33,7 @@ namespace Tmpl8 {
 		SphericalLight(vec3 position, float radius, vec4 color, int intensity);
 
 		void intersect(Ray* ray);
-		vec3 getRandomPointOnLight();
+		vec3 getRandomPointOnLight(std::mt19937 randomNumbersGenerator);
 		vec3 getNormal(vec3 point);
 		float getArea();
 	private:

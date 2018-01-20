@@ -26,6 +26,7 @@ namespace Tmpl8 {
 		vec4 accumulator[SCRHEIGHT * SCRWIDTH];
 		int accumulatorCounter;
 		float inversedAccumulatorCounter;
+		std::mt19937 randomNumbersGenerator;
 
 		TopBVH* topBHV;
 		std::vector<BVH*> BVHs;

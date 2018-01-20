@@ -27,7 +27,7 @@ void DirectLight::intersect(Ray* ray)
 	}
 }
 
-vec3 DirectLight::getRandomPointOnLight()
+vec3 DirectLight::getRandomPointOnLight(std::mt19937 randomNumbersGenerator)
 {
 	return this->position;
 }
@@ -71,21 +71,12 @@ void SphericalLight::intersect(Ray* ray)
 	}
 }
 
-vec3 SphericalLight::getRandomPointOnLight()
+vec3 SphericalLight::getRandomPointOnLight(std::mt19937 randomNumbersGenerator)
 {
-	/*float randomPhi = acosf(2 * (rand() / RAND_MAX) -1);
-	float randomTheta = (rand() / RAND_MAX) * PI * 2;
+	std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
 
-	vec3 point(radius * sin(randomPhi) * cos(randomTheta), radius * sin(randomPhi) * sin(randomTheta), radius *  cos(randomPhi));
-	return this->position + point;*/
-
-	// set up random number generators
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	std::mt19937 generator(seed);
-	std::uniform_real_distribution<double> uniform01(0.0, 1.0);
-
-	double theta = 2 * M_PI * uniform01(generator);
-	double phi = acos(1 - 2 * uniform01(generator));
+	double theta = 2 * M_PI * uniformGenerator01(randomNumbersGenerator);
+	double phi = acos(1 - 2 * uniformGenerator01(randomNumbersGenerator));
 
 	double x = sin(phi) * cos(theta);
 	double y = sin(phi) * sin(theta);
