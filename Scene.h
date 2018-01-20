@@ -50,7 +50,7 @@ namespace Tmpl8 {
 		std::vector<Model*> models;
 
 		vec4 basicTrace(Ray* ray, int depth);
-		vec4 trace(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular = true);
+		vec4 sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular = true);
 		vec4 sampleSkydome(Ray* ray);
 		vec4 illuminate(Ray* ray, int depth);
 		Ray* computeDiffuseReflectionRay(Ray* ray);

@@ -26,7 +26,7 @@ void Scene::render(int row)
 		}
 		else
 		{
-			color = this->trace(ray, 0);
+			color = this->sample(ray, 0);
 		}
 
 		int pixelId = row * SCRWIDTH + x;
@@ -139,7 +139,7 @@ vec4 Scene::basicTrace(Ray* ray, int depth)
 	return BGCOLOR;
 }
 
-vec4 Scene::trace(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
+vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 {
 	depth += 1;
 	if (depth > 10) return BGCOLOR;
@@ -172,7 +172,7 @@ vec4 Scene::trace(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 	if (material->type == mirror)
 	{
 		Ray* reflectionRay = computeReflectionRay(ray);
-		vec4 reflectionColor = this->trace(reflectionRay, depth, true);
+		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
 		delete reflectionRay;
 
 		return material->color * reflectionColor;
@@ -187,11 +187,11 @@ vec4 Scene::trace(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 		}
 		else
 		{
-			color += this->trace(refractionRay, depth, true);
+			color += this->sample(refractionRay, depth, true);
 		}
 
 		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->trace(reflectionRay, depth, true);
+		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
 
 		delete refractionRay;
 		delete reflectionRay;
@@ -249,7 +249,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	//float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
 	float PDF = (2 * PI);
 
-	vec4 bounceRayColor = (this->trace(diffuseReflectionRay, depth, false) * dot(primitiveNormal, diffuseReflectionRay->direction));
+	vec4 bounceRayColor = (this->sample(diffuseReflectionRay, depth, false) * dot(primitiveNormal, diffuseReflectionRay->direction));
 	delete diffuseReflectionRay;
 
 	return (bounceRayColor * PDF) * BRDF + lightStrength;
