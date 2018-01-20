@@ -223,8 +223,10 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	float distanceToLightSquared = lightDirection.sqrLentgh();
 	lightDirection = normalize(lightDirection);
 
+	vec3 primitiveNormal = intersectedPrimitive->getNormal(hitPoint);
+
 	float lightNormalDotLightDirection = dot(randomLight->getNormal(hitPoint), -lightDirection);
-	float primitiveNormalDotLightDirection = dot(intersectedPrimitive->getNormal(hitPoint), lightDirection);
+	float primitiveNormalDotLightDirection = dot(primitiveNormal, lightDirection);
 
 	vec4 lightStrength = vec4(0, 0, 0, 1);
 	vec4 BRDF = intersectedPrimitive->material->color * INVERSEPI;
@@ -244,10 +246,13 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	}
 
 	Ray* diffuseReflectionRay = this->computeDiffuseReflectionRay(ray);
-	vec4 bounceRayColor = this->trace(diffuseReflectionRay, depth, false) * dot(diffuseReflectionRay->direction, intersectedPrimitive->getNormal(hitPoint));
+	//float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
+	float PDF = (2 * PI);
+
+	vec4 bounceRayColor = (this->trace(diffuseReflectionRay, depth, false) * dot(primitiveNormal, diffuseReflectionRay->direction));
 	delete diffuseReflectionRay;
 
-	return PI * 2.0f * bounceRayColor * BRDF + lightStrength;
+	return (bounceRayColor * PDF) * BRDF + lightStrength;
 }
 
 Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
@@ -263,10 +268,14 @@ Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
 	float random1 = uniform01(generator); //((float)rand() / (RAND_MAX));
 	float random2 = uniform01(generator); // ((float)rand() / (RAND_MAX));
 
-	float r = sqrt(1 - random1 * random1);
 	float angle = 2 * PI * random2;
+	float r = sqrt(1 - random1 * random1);
 	vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, random1);
-	
+
+	// Importance Sampling
+	//float r = sqrt(random1);
+	//vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, sqrt(1 - random1));
+
 	if (dot(N, direction) < 0)
 	{
 		direction *= -1.0f;
@@ -313,8 +322,8 @@ Ray* Scene::computeRefractionRay(Ray* ray)
 	else
 	{
 		vec3 direction = eta * ray->direction + (eta * cosi - sqrtf(k)) * n;
-		vec3 origin = hitPoint + direction * 0.01;
-		
+		vec3 origin = hitPoint + direction * EPSILON;
+
 		return new Ray(origin, direction);
 	}
 }

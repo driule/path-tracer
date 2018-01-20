@@ -19,7 +19,7 @@
 
 #define CAMERA_ORIGIN vec3(0, 0, -3)
 
-#define MULTITHREADING_ENABLED 0
+#define MULTITHREADING_ENABLED 1
 #define BVH_ENABLED 1
 
 enum MaterialType { diffuse, mirror, dielectric };
