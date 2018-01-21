@@ -219,7 +219,9 @@ vec4 Scene::sampleSkydome(Ray* ray)
 vec4 Scene::illuminate(Ray* ray, int depth)
 {
 	vec3 hitPoint = ray->origin + ray->t * ray->direction;
+
 	Primitive* intersectedPrimitive = this->primitives[ray->intersectedObjectId];
+	vec3 primitiveNormal = intersectedPrimitive->getNormal(hitPoint);
 
 	int randomLightIndex = rand() % this->lightSources.size();
 	LightSource* randomLight = this->lightSources[randomLightIndex];
@@ -227,8 +229,6 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	vec3 lightDirection = randomLight->getRandomPointOnLight(this->randomNumbersGenerator) - hitPoint;
 	float distanceToLightSquared = lightDirection.sqrLentgh();
 	lightDirection = normalize(lightDirection);
-
-	vec3 primitiveNormal = intersectedPrimitive->getNormal(hitPoint);
 
 	float lightNormalDotLightDirection = dot(randomLight->getNormal(hitPoint), -lightDirection);
 	float primitiveNormalDotLightDirection = dot(primitiveNormal, lightDirection);
@@ -240,7 +240,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 		// light is not behind surface point, trace shadow ray
 		Ray* shadowRay = new Ray(hitPoint + EPSILON * lightDirection, lightDirection);
 		shadowRay->t = sqrt(distanceToLightSquared) - 2 * EPSILON;
-		this->intersectPrimitives(shadowRay);
+		this->intersectPrimitives(shadowRay, true);
 
 		if (shadowRay->intersectedObjectId == -1)
 		{
@@ -263,7 +263,6 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
 {
 	vec3 hitPoint = ray->origin + ray->t * ray->direction;
-	vec3 N = this->primitives[ray->intersectedObjectId]->getNormal(hitPoint);
 
 	std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
 	float random1 = uniformGenerator01(this->randomNumbersGenerator);
@@ -277,14 +276,12 @@ Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
 	//float r = sqrt(random1);
 	//vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, sqrt(1 - random1));
 
-	if (dot(N, direction) < 0)
+	if (dot(this->primitives[ray->intersectedObjectId]->getNormal(hitPoint), direction) < 0)
 	{
 		direction *= -1.0f;
 	}
 
-	vec3 origin = hitPoint + direction * EPSILON;
-
-	return new Ray(origin, direction);
+	return new Ray(hitPoint + direction * EPSILON, direction);
 }
 
 Ray* Scene::computeReflectionRay(Ray* ray)
