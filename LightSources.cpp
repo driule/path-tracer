@@ -39,7 +39,7 @@ vec3 DirectLight::getNormal(vec3 point)
 
 float DirectLight::getArea()
 {
-	return 1;
+	return EPSILON;
 }
 
 // -------------------- SPHERICAL LIGHT ------------------------------------

@@ -253,7 +253,6 @@ void Game::loadNiceScene()
 	Material* orangeMaterial = new Material(vec4(0.95, 0.61, 0.07, 1), diffuse);
 	Material* redMaterial = new Material(vec4(0.8, 0.21, 0.19, 1), diffuse);
 
-
 	int roomWidth = 50;
 	int roomHeigth = 50;
 
@@ -304,13 +303,9 @@ void Game::loadTeddy()
 	scene->camera->right = vec3(-0.77, 0, -0.62);
 	scene->camera->calculateScreen();
 
-	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, 20.0), vec4(1, 1, 1, 0), 250));
-	scene->addLightSource(new DirectLight(vec3(8.0f, 0.0f, 18.0), vec4(1, 1, 1, 0), 100));
-	scene->addLightSource(new DirectLight(vec3(4.0f, 8.0f, 20.0), vec4(1, 1, 1, 0), 100));
+	scene->loadSkydome("assets/skydome/clouds.hdr");
 
-	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, -20.0), vec4(1, 1, 1, 0), 250));
-	scene->addLightSource(new DirectLight(vec3(8.0f, 0.0f, -18.0), vec4(1, 1, 1, 0), 100));
-	scene->addLightSource(new DirectLight(vec3(4.0f, 8.0f, -20.0), vec4(1, 1, 1, 0), 100));
+	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, 20.0), vec4(1, 1, 1, 0), 250));
 
 	Material* redMaterial = new Material(vec4(1, 0, 0, 0), diffuse);
 	scene->addPrimitive(
@@ -336,13 +331,9 @@ void Game::loadTeapot()
 	scene->camera->right = vec3(-0.921, 0, -0.387);
 	scene->camera->calculateScreen();
 
-	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, 20.0), vec4(1, 1, 1, 0), 250));
-	scene->addLightSource(new DirectLight(vec3(8.0f, 0.0f, 18.0), vec4(1, 1, 1, 0), 100));
-	scene->addLightSource(new DirectLight(vec3(4.0f, 8.0f, 20.0), vec4(1, 1, 1, 0), 100));
+	scene->loadSkydome("assets/skydome/clouds.hdr");
 
-	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, -20.0), vec4(1, 1, 1, 0), 250));
-	scene->addLightSource(new DirectLight(vec3(8.0f, 0.0f, -18.0), vec4(1, 1, 1, 0), 100));
-	scene->addLightSource(new DirectLight(vec3(4.0f, 8.0f, -20.0), vec4(1, 1, 1, 0), 100));
+	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, 20.0), vec4(1, 1, 1, 0), 250));
 
 	Material* brownMaterial = new Material(vec4(1, 0.8, 0.5, 0), diffuse);
 	for (int i = 0; i < 10; i++)
