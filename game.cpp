@@ -236,6 +236,7 @@ void Game::loadNiceScene()
 	// scene lights
 	scene->addLightSource(new SphericalLight(vec3(-5, 30, -20), 2, vec4(1, 1, 1, 1), 125));
 	scene->addLightSource(new SphericalLight(vec3(15, 30, -20), 1, vec4(1, 1, 1, 1), 100));
+	scene->addLightSource(new SphericalLight(vec3(EPSILON, -10, -20), 2, vec4(1, 1, 1, 1), 25));
 
 	// materials
 	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);

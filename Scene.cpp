@@ -183,7 +183,7 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 	}
 	if (material->type == dielectric)
 	{
-		vec4 color = material->color *0.2;
+		vec4 color = material->color * 0.2;
 
 		Ray* refractionRay = this->computeRefractionRay(ray);
 		if (refractionRay->intersectedObjectId == -2)
