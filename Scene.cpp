@@ -246,7 +246,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 		if (shadowRay->intersectedObjectId == -1)
 		{
 			float solidAngle = CLAMP((lightNormalDotLightDirection * randomLight->getArea()) / distanceToLightSquared, 0, 1);
-			lightStrength = randomLight->color * solidAngle * BRDF * primitiveNormalDotLightDirection;
+			lightStrength = randomLight->color * randomLight->intensity * solidAngle * BRDF * primitiveNormalDotLightDirection;
 		}
 		delete shadowRay;
 	}
