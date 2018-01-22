@@ -236,7 +236,7 @@ void Game::loadNiceScene()
 	// scene lights
 	scene->addLightSource(new SphericalLight(vec3(-5, 30, -20), 2, vec4(1, 1, 1, 1), 125));
 	scene->addLightSource(new SphericalLight(vec3(15, 30, -20), 1, vec4(1, 1, 1, 1), 100));
-	scene->addLightSource(new SphericalLight(vec3(EPSILON, -10, -20), 2, vec4(1, 1, 1, 1), 25));
+	scene->addLightSource(new SphericalLight(vec3(0, -10, -20), 2, vec4(1, 1, 1, 1), 25));
 
 	// materials
 	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
@@ -278,34 +278,34 @@ void Game::loadNiceScene()
 	//*/
 
 	// teapots
-	Material* brownMaterial = new Material(vec4(1, 0.8, 0.5, 0), diffuse);
+	Material* purpleMaterial = new Material(vec4(0.67, 0.37, 0.87, 0), diffuse);
 
-	scene->loadModel("assets/teapot.obj", brownMaterial, vec3(-10, -7, -30));
+	scene->loadModel("assets/teapot.obj", purpleMaterial, vec3(-10, -7, -30));
 	scene->addPrimitive(new Sphere(whiteMaterial, vec3(-10, -12, -30), 5));
 
 	scene->loadModel("assets/teapot.obj", redGlassMaterial, vec3(EPSILON, -10, -30));
 
-	scene->loadModel("assets/teapot.obj", brownMaterial, vec3(10, -7, -30));
+	scene->loadModel("assets/teapot.obj", purpleMaterial, vec3(10, -7, -30));
 	scene->addPrimitive(new Sphere(whiteMaterial, vec3(10, -12, -30), 5));
 
 	// sphere with torus
-	scene->addPrimitive(new Sphere(glassMaterial, vec3(0, -5, -10), 5));
-	scene->addPrimitive(new Torus(orangeMaterial, 7, 1, vec3(0, -5, -10), vec3(-1, -1.5, 0)));
+	scene->addPrimitive(new Sphere(glassMaterial, vec3(0, 0, -10), 5));
+	scene->addPrimitive(new Torus(orangeMaterial, 7, 1, vec3(0, 0, -10), vec3(-1, -1.5, 0)));
 
 	// cylinders
-	scene->addPrimitive(new Cylinder(redMaterial, vec3(-10, -5, -20), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-13, -5, -22), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(redMaterial, vec3(-16, -5, -24), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-19, -5, -26), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(redMaterial, vec3(-22, -5, -28), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-25, -5, -30), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(-10, -10, -20), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-13, -10, -22), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(-16, -10, -24), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-19, -10, -26), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(-22, -10, -28), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-25, -10, -30), vec3(0, 1, 0), 0.5, 30));
 
-	scene->addPrimitive(new Cylinder(redMaterial, vec3(10, -5, -20), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(glassMaterial, vec3(13, -5, -22), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(redMaterial, vec3(16, -5, -24), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(glassMaterial, vec3(19, -5, -26), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(redMaterial, vec3(22, -5, -28), vec3(0, 1, 0), 0.5, 10));
-	scene->addPrimitive(new Cylinder(glassMaterial, vec3(25, -5, -30), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(10, -10, -20), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(13, -10, -22), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(16, -10, -24), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(19, -10, -26), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(22, -10, -28), vec3(0, 1, 0), 0.5, 30));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(25, -10, -30), vec3(0, 1, 0), 0.5, 30));
 }
 
 void Game::loadTeddy()
