@@ -186,7 +186,7 @@ vec4 Scene::sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecul
 	return BGCOLOR;
 }
 
-vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
+vec4 Scene::sample(Ray* ray, int depth)
 {
 	depth += 1;
 	if (depth > 10) return BGCOLOR;
@@ -201,12 +201,7 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 
 	if (ray->lightIntersected)
 	{
-		if (!isLastIntersectedPrimitiveSpecular)
-		{
-			return this->lightSources[ray->intersectedObjectId]->color;
-		}
-
-		return BGCOLOR;
+		return this->lightSources[ray->intersectedObjectId]->color;
 	}
 
 	// primitive intersected
@@ -218,7 +213,7 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 	if (material->type == mirror)
 	{
 		Ray* reflectionRay = computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
+		vec4 reflectionColor = this->sample(reflectionRay, depth);
 		delete reflectionRay;
 
 		return material->color * reflectionColor;
@@ -235,11 +230,11 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 		}
 		else
 		{
-			color += this->sample(refractionRay, depth, true);
+			color += this->sample(refractionRay, depth);
 		}
 
 		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
+		vec4 reflectionColor = this->sample(reflectionRay, depth);
 
 		delete refractionRay;
 		delete reflectionRay;
@@ -297,7 +292,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
 	//float PDF = (2 * PI);
 
-	vec4 bounceRayColor = (this->sample(diffuseReflectionRay, depth, false) * dot(primitiveNormal, diffuseReflectionRay->direction));
+	vec4 bounceRayColor = (this->sample(diffuseReflectionRay, depth) * dot(primitiveNormal, diffuseReflectionRay->direction));
 	delete diffuseReflectionRay;
 
 	return (bounceRayColor * PDF) * BRDF + lightStrength;
