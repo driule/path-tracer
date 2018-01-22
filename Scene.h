@@ -50,8 +50,8 @@ namespace Tmpl8 {
 		};
 		std::vector<Model*> models;
 
-		vec4 sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular = true);
-		vec4 sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular = true);
+		vec4 sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular = false);
+		vec4 sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular = false);
 		vec4 sampleSkydome(Ray* ray);
 		vec4 illuminate(Ray* ray, int depth);
 		Ray* computeDiffuseReflectionRay(Ray* ray);

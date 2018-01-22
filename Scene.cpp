@@ -76,7 +76,7 @@ vec4 Scene::sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecul
 
 	if (ray->lightIntersected)
 	{
-		if (isLastIntersectedPrimitiveSpecular)
+		if (!isLastIntersectedPrimitiveSpecular)
 		{
 			return this->lightSources[ray->intersectedObjectId]->color;
 		}
@@ -201,7 +201,7 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 
 	if (ray->lightIntersected)
 	{
-		if (isLastIntersectedPrimitiveSpecular)
+		if (!isLastIntersectedPrimitiveSpecular)
 		{
 			return this->lightSources[ray->intersectedObjectId]->color;
 		}
