@@ -271,7 +271,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	float lightNormalDotLightDirection = dot(randomLight->getNormal(hitPoint), -lightDirection);
 	float primitiveNormalDotLightDirection = dot(primitiveNormal, lightDirection);
 
-	vec4 lightStrength = vec4(0, 0, 0, 1);
+	vec4 directIlluminationColor = vec4(0, 0, 0, 1);
 	vec4 BRDF = intersectedPrimitive->material->color * INVERSEPI;
 	if (lightNormalDotLightDirection > 0 && primitiveNormalDotLightDirection > 0)
 	{
@@ -283,7 +283,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 		if (shadowRay->intersectedObjectId == -1)
 		{
 			float solidAngle = CLAMP((lightNormalDotLightDirection * randomLight->getArea()) / distanceToLightSquared, 0, 1);
-			lightStrength = randomLight->color * randomLight->intensity * solidAngle * BRDF * primitiveNormalDotLightDirection;
+			directIlluminationColor = randomLight->color * randomLight->intensity * solidAngle * BRDF * primitiveNormalDotLightDirection;
 		}
 		delete shadowRay;
 	}
@@ -292,10 +292,10 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
 	//float PDF = (2 * PI);
 
-	vec4 bounceRayColor = (this->sample(diffuseReflectionRay, depth) * dot(primitiveNormal, diffuseReflectionRay->direction));
+	vec4 indirectIlluminationColor = this->sample(diffuseReflectionRay, depth) * dot(primitiveNormal, diffuseReflectionRay->direction) * PDF * BRDF;
 	delete diffuseReflectionRay;
 
-	return (bounceRayColor * PDF) * BRDF + lightStrength;
+	return directIlluminationColor + indirectIlluminationColor;
 }
 
 Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
