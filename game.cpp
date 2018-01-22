@@ -256,7 +256,7 @@ void Game::loadNiceScene()
 	Material* redMaterial = new Material(vec4(0.8, 0.21, 0.19, 1), diffuse);
 
 	int roomWidth = 50;
-	int roomHeigth = 50;
+	int roomHeigth = 10;
 
 	// floor
 	//scene->addPrimitive(new Triangle(floorMaterial, vec3(-roomWidth, -10, -100), vec3(-roomWidth, -10, 10), vec3(roomWidth, -10, 10)));
