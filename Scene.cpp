@@ -24,15 +24,15 @@ void Scene::render(int row)
 		// generate and trace ray
 		Ray* ray = this->camera->generateRay(x, row);
 
-		vec4 color = this->sample(ray, 0);
-		/*if (x < SCRWIDTH / 2)
+		vec4 color;// = this->sample(ray, 0);
+		if (x < SCRWIDTH / 2)
 		{
-			color = this->basicSample(ray, 0);
+			color = this->sampleNEE(ray, 0);
 		}
 		else
 		{
 			color = this->sample(ray, 0);
-		}*/
+		}
 
 		int pixelId = row * SCRWIDTH + x;
 		this->accumulator[pixelId] += color;
@@ -61,10 +61,10 @@ void Scene::resetAccumulator()
 	this->accumulatorCounter = 0;
 }
 
-vec4 Scene::basicSample(Ray* ray, int depth)
+vec4 Scene::sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 {
 	depth += 1;
-	if (depth > 5) return BGCOLOR;
+	if (depth > 10) return BGCOLOR;
 
 	this->intersectPrimitives(ray);
 	this->intersectLightSources(ray);
@@ -76,51 +76,93 @@ vec4 Scene::basicSample(Ray* ray, int depth)
 
 	if (ray->lightIntersected)
 	{
-		return this->lightSources[ray->intersectedObjectId]->color;
+		if (isLastIntersectedPrimitiveSpecular)
+		{
+			return this->lightSources[ray->intersectedObjectId]->color;
+		}
 
+		return BGCOLOR;
 	}
 
 	// primitive intersected
 	Material* material = this->primitives[ray->intersectedObjectId]->material;
-	vec4 color = vec4(0, 0, 0, 0);
 	if (material->type == diffuse)
 	{
-		vec4 diffuseColor = vec4(0, 0, 0, 1);
-
 		vec3 hitPoint = ray->origin + ray->t * ray->direction;
-		vec3 N = this->primitives[ray->intersectedObjectId]->getNormal(hitPoint);
 
-		float random1 = ((float)rand() / (RAND_MAX));
-		float random2 = ((float)rand() / (RAND_MAX));
-		float r = sqrt(1 - random1 * random1);
+		Primitive* intersectedPrimitive = this->primitives[ray->intersectedObjectId];
+		vec3 primitiveNormal = intersectedPrimitive->getNormal(hitPoint);
+
+		int randomLightIndex = rand() % this->lightSources.size();
+		LightSource* randomLight = this->lightSources[randomLightIndex];
+
+		vec3 lightDirection = randomLight->getRandomPointOnLight(this->randomNumbersGenerator) - hitPoint;
+		float distanceToLightSquared = lightDirection.sqrLentgh();
+		lightDirection = normalize(lightDirection);
+
+		float lightNormalDotLightDirection = dot(randomLight->getNormal(hitPoint), -lightDirection);
+		float primitiveNormalDotLightDirection = dot(primitiveNormal, lightDirection);
+
+		vec4 lightStrength = vec4(0, 0, 0, 1);
+		vec4 BRDF = intersectedPrimitive->material->color * INVERSEPI;
+		if (lightNormalDotLightDirection > 0 && primitiveNormalDotLightDirection > 0)
+		{
+			// light is not behind surface point, trace shadow ray
+			Ray* shadowRay = new Ray(hitPoint + EPSILON * lightDirection, lightDirection);
+			shadowRay->t = sqrt(distanceToLightSquared) - 2 * EPSILON;
+			this->intersectPrimitives(shadowRay, true);
+
+			if (shadowRay->intersectedObjectId == -1)
+			{
+				float solidAngle = CLAMP((lightNormalDotLightDirection * randomLight->getArea()) / distanceToLightSquared, 0, 1);
+				lightStrength = randomLight->color * randomLight->intensity * solidAngle * BRDF * primitiveNormalDotLightDirection;
+			}
+			delete shadowRay;
+		}
+
+		//Ray* diffuseReflectionRay = this->computeDiffuseReflectionRay(ray);
+		//
+		//vec3 hitPoint = ray->origin + ray->t * ray->direction;
+
+		std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
+		float random1 = uniformGenerator01(this->randomNumbersGenerator);
+		float random2 = uniformGenerator01(this->randomNumbersGenerator);
+
 		float angle = 2 * PI * random2;
+		float r = sqrt(1 - random1 * random1);
 		vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, random1);
 
-		if (dot(N, direction) < 0)
+		// Importance Sampling
+		//float r = sqrt(random1);
+		//vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, sqrt(1 - random1));
+
+		if (dot(this->primitives[ray->intersectedObjectId]->getNormal(hitPoint), direction) < 0)
 		{
 			direction *= -1.0f;
 		}
+
 		Ray* diffuseReflectionRay = new Ray(hitPoint + direction * EPSILON, direction);
+		//
+		//float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
+		float PDF = (2 * PI);
 
-		vec4 BRDF = material->color * INVERSEPI;
-		vec4 bounceRayColor = this->basicSample(diffuseReflectionRay, depth) * dot(diffuseReflectionRay->direction, N);
-
-		diffuseColor = 2 * PI * BRDF * bounceRayColor;
-
+		vec4 bounceRayColor = (this->sampleNEE(diffuseReflectionRay, depth, false) * dot(primitiveNormal, diffuseReflectionRay->direction));
 		delete diffuseReflectionRay;
 
-		return diffuseColor;
+		return (bounceRayColor * PDF) * BRDF + lightStrength;
 	}
 	if (material->type == mirror)
 	{
 		Ray* reflectionRay = computeReflectionRay(ray);
-		vec4 reflectionColor = this->basicSample(reflectionRay, depth);
+		vec4 reflectionColor = this->sampleNEE(reflectionRay, depth, true);
 		delete reflectionRay;
 
-		return color + reflectionColor;
+		return material->color * reflectionColor;
 	}
 	if (material->type == dielectric)
 	{
+		vec4 color = material->color * 0.2;
+
 		Ray* refractionRay = this->computeRefractionRay(ray);
 		if (refractionRay->intersectedObjectId == -2)
 		{
@@ -129,11 +171,11 @@ vec4 Scene::basicSample(Ray* ray, int depth)
 		}
 		else
 		{
-			color += this->basicSample(refractionRay, depth);
+			color += this->sampleNEE(refractionRay, depth, true);
 		}
 
 		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->basicSample(reflectionRay, depth);
+		vec4 reflectionColor = this->sampleNEE(reflectionRay, depth, true);
 
 		delete refractionRay;
 		delete reflectionRay;
@@ -252,8 +294,8 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	}
 
 	Ray* diffuseReflectionRay = this->computeDiffuseReflectionRay(ray);
-	//float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
-	float PDF = (2 * PI);
+	float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
+	//float PDF = (2 * PI);
 
 	vec4 bounceRayColor = (this->sample(diffuseReflectionRay, depth, false) * dot(primitiveNormal, diffuseReflectionRay->direction));
 	delete diffuseReflectionRay;
@@ -270,12 +312,12 @@ Ray* Scene::computeDiffuseReflectionRay(Ray* ray)
 	float random2 = uniformGenerator01(this->randomNumbersGenerator);
 
 	float angle = 2 * PI * random2;
-	float r = sqrt(1 - random1 * random1);
-	vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, random1);
+	//float r = sqrt(1 - random1 * random1);
+	//vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, random1);
 
 	// Importance Sampling
-	//float r = sqrt(random1);
-	//vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, sqrt(1 - random1));
+	float r = sqrt(random1);
+	vec3 direction = vec3(cosf(angle) * r, sinf(angle) * r, sqrt(1 - random1));
 
 	if (dot(this->primitives[ray->intersectedObjectId]->getNormal(hitPoint), direction) < 0)
 	{
