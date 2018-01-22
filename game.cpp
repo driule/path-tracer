@@ -220,34 +220,35 @@ void Game::loadNiceScene()
 	// https://groups.csail.mit.edu/graphics/classes/6.837/F03/models/
 	//movingModelId = scene->loadModel("assets/cube.obj", brownMaterial);
 
-	// Reset scene
+	// reset scene
 	sceneId = 0;
 	cameraSpeed = 1;
 	scene->clear();
 	scene->camera->reset();
 
-	scene->camera->position = vec3(0, -2.5, -40);
-	scene->camera->up = vec3(0, 1, 0);
+	scene->camera->position = vec3(0, 10, -60);
+	scene->camera->up = vec3(0, 0.9, 0.15);
 	scene->camera->right = vec3(1, 0, 0);
 	scene->camera->calculateScreen();
 
-	scene->loadSkydome("assets/skydome/city.hdr");
+	//scene->loadSkydome("assets/skydome/city.hdr");
 
-	// create scene lights
-	//scene->addLightSource(new DirectLight(vec3(-10, 20, -30), vec4(1, 1, 1, 0), 1000));
-	//scene->addLightSource(new DirectLight(vec3(0.0f, -2.f, 0.0f), vec4(1, 1, 1, 0), 20));
-	scene->addLightSource(new SphericalLight(vec3(-5, 15, -20), 3, vec4(1, 1, 1, 1), 1000));
-	scene->addLightSource(new SphericalLight(vec3(15, 15, -20), 3, vec4(1, 1, 1, 1), 1000));
+	// scene lights
+	scene->addLightSource(new SphericalLight(vec3(-5, 30, -20), 6, vec4(1, 1, 1, 1), 1000));
+	scene->addLightSource(new SphericalLight(vec3(15, 30, -20), 10, vec4(1, 1, 1, 1), 1000));
 
-	// create scene objects
-	//Material* floorMaterial = new Material(vec4(0.22, 0.61, 0.86, 1), diffuse);
-	Material* floorMaterial = new Material(vec4(1, 1, 1, 1), diffuse);
-	Material* wall1Material = new Material(vec4(0.09, 0.63, 0.52, 1), diffuse);
-	Material* wall2Material = new Material(vec4(0.3, 0.7, 0.3, 1.0), diffuse);
+	// materials
+	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
+	Material* whiteMaterial = new Material(vec4(1, 1, 1, 1), diffuse);
+	Material* wallMaterial = new Material(vec4(0.09, 0.63, 0.52, 1), diffuse);
 
-	Material* glassMaterial = new Material(vec4(0.93, 0.94, 0.95, 1), dielectric);
+	Material* glassMaterial = new Material(vec4(0, 0, 0, 1), dielectric);
 	glassMaterial->refraction = 1.33;
 	glassMaterial->reflection = 0.1;
+
+	Material* redGlassMaterial = new Material(vec4(1, 0, 0, 1), dielectric);
+	redGlassMaterial->refraction = 1.1;
+	redGlassMaterial->reflection = 0.8;
 
 	Material* mirrorMaterial = new Material(vec4(0.75, 0.8, 0.7, 1), mirror);
 	Material* orangeMaterial = new Material(vec4(0.95, 0.61, 0.07, 1), diffuse);
@@ -256,39 +257,54 @@ void Game::loadNiceScene()
 	int roomWidth = 50;
 	int roomHeigth = 50;
 
-	//Add Teapot
-	Material* brownMaterial = new Material(vec4(1, 0.8, 0.5, 0), diffuse);
-	scene->loadModel("assets/teapot.obj", brownMaterial, vec3(-15, -10, -20));
-	scene->loadModel("assets/teapot.obj", redMaterial, vec3(4, -10, -20));
-	scene->loadModel("assets/teapot.obj", glassMaterial, vec3(15, -10, -20));
-
-	//Floor primitives
+	// floor
 	//scene->addPrimitive(new Triangle(floorMaterial, vec3(-roomWidth, -10, -100), vec3(-roomWidth, -10, 10), vec3(roomWidth, -10, 10)));
 	//scene->addPrimitive(new Triangle(floorMaterial, vec3(roomWidth, -10, -100), vec3(-roomWidth, -10, -100), vec3(roomWidth, -10, 10)));
 	scene->addPrimitive(new Plane(floorMaterial, vec3(roomWidth, -10, 10), vec3(0, 1, 0), 100));
 	
-	//Wall primitives
+	// walls
 	scene->addPrimitive(new Triangle(mirrorMaterial, vec3(roomWidth, -roomHeigth, 10), vec3(-roomWidth, -roomHeigth, 10), vec3(roomWidth, roomHeigth, 10)));
 	scene->addPrimitive(new Triangle(mirrorMaterial, vec3(-roomWidth, -roomHeigth, 10), vec3(-roomWidth, roomHeigth, 10), vec3(roomWidth, roomHeigth, 10)));
 
-	/*scene->addPrimitive(new Triangle(wall1Material, vec3(roomWidth, -roomHeigth, -100), vec3(roomWidth, -roomHeigth, 10), vec3(roomWidth, roomHeigth, 10)));
-	scene->addPrimitive(new Triangle(wall1Material, vec3(roomWidth, roomHeigth, -100), vec3(roomWidth, -roomHeigth, -100), vec3(roomWidth, roomHeigth, 10)));
+	/*scene->addPrimitive(new Triangle(wallMaterial, vec3(roomWidth, -roomHeigth, -100), vec3(roomWidth, -roomHeigth, 10), vec3(roomWidth, roomHeigth, 10)));
+	scene->addPrimitive(new Triangle(wallMaterial, vec3(roomWidth, roomHeigth, -100), vec3(roomWidth, -roomHeigth, -100), vec3(roomWidth, roomHeigth, 10)));
 
-	scene->addPrimitive(new Triangle(wall1Material, vec3(-roomWidth, -roomHeigth, 10), vec3(-roomWidth, -roomHeigth, -100), vec3(-roomWidth, roomHeigth, 10)));
-	scene->addPrimitive(new Triangle(wall1Material, vec3(-roomWidth, -roomHeigth, -100), vec3(-roomWidth, roomHeigth, -100), vec3(-roomWidth, roomHeigth, 10)));
+	scene->addPrimitive(new Triangle(wallMaterial, vec3(-roomWidth, -roomHeigth, 10), vec3(-roomWidth, -roomHeigth, -100), vec3(-roomWidth, roomHeigth, 10)));
+	scene->addPrimitive(new Triangle(wallMaterial, vec3(-roomWidth, -roomHeigth, -100), vec3(-roomWidth, roomHeigth, -100), vec3(-roomWidth, roomHeigth, 10)));
 
-	scene->addPrimitive(new Triangle(wall1Material, vec3(-roomWidth, -roomHeigth, -100), vec3(roomWidth, -roomHeigth, -100), vec3(roomWidth, roomHeigth, -100)));
-	scene->addPrimitive(new Triangle(wall1Material, vec3(-roomWidth, roomHeigth, -100), vec3(-roomWidth, -roomHeigth, -100), vec3(roomWidth, roomHeigth, -100)));
-	*/
+	scene->addPrimitive(new Triangle(wallMaterial, vec3(-roomWidth, -roomHeigth, -100), vec3(roomWidth, -roomHeigth, -100), vec3(roomWidth, roomHeigth, -100)));
+	scene->addPrimitive(new Triangle(wallMaterial, vec3(-roomWidth, roomHeigth, -100), vec3(-roomWidth, -roomHeigth, -100), vec3(roomWidth, roomHeigth, -100)));
+	//*/
 
-	//Sphere
-	scene->addPrimitive(new Sphere(orangeMaterial, vec3(0, -5, -10), 5));
+	// teapots
+	Material* brownMaterial = new Material(vec4(1, 0.8, 0.5, 0), diffuse);
 
-	//More primitives
-	scene->addPrimitive(new Torus(redMaterial, 2, 1, vec3(-3, -6, -20), vec3(0.2, -0.2, -1)));
+	scene->loadModel("assets/teapot.obj", brownMaterial, vec3(-10, -7, -30));
+	scene->addPrimitive(new Sphere(whiteMaterial, vec3(-10, -12, -30), 5));
+
+	scene->loadModel("assets/teapot.obj", redGlassMaterial, vec3(EPSILON, -10, -30));
+
+	scene->loadModel("assets/teapot.obj", brownMaterial, vec3(10, -7, -30));
+	scene->addPrimitive(new Sphere(whiteMaterial, vec3(10, -12, -30), 5));
+
+	// sphere with torus
+	scene->addPrimitive(new Sphere(glassMaterial, vec3(0, -5, -10), 5));
+	scene->addPrimitive(new Torus(orangeMaterial, 7, 1, vec3(0, -5, -10), vec3(-1, -1.5, 0)));
+
+	// cylinders
 	scene->addPrimitive(new Cylinder(redMaterial, vec3(-10, -5, -20), vec3(0, 1, 0), 0.5, 10));
 	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-13, -5, -22), vec3(0, 1, 0), 0.5, 10));
 	scene->addPrimitive(new Cylinder(redMaterial, vec3(-16, -5, -24), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-19, -5, -26), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(-22, -5, -28), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(-25, -5, -30), vec3(0, 1, 0), 0.5, 10));
+
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(10, -5, -20), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(13, -5, -22), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(16, -5, -24), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(19, -5, -26), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(redMaterial, vec3(22, -5, -28), vec3(0, 1, 0), 0.5, 10));
+	scene->addPrimitive(new Cylinder(glassMaterial, vec3(25, -5, -30), vec3(0, 1, 0), 0.5, 10));
 }
 
 void Game::loadTeddy()

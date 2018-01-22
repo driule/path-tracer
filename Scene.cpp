@@ -24,15 +24,15 @@ void Scene::render(int row)
 		// generate and trace ray
 		Ray* ray = this->camera->generateRay(x, row);
 
-		vec4 color;
-		if (x < SCRWIDTH / 2)
+		vec4 color = this->sample(ray, 0);
+		/*if (x < SCRWIDTH / 2)
 		{
 			color = this->basicSample(ray, 0);
 		}
 		else
 		{
 			color = this->sample(ray, 0);
-		}
+		}*/
 
 		int pixelId = row * SCRWIDTH + x;
 		this->accumulator[pixelId] += color;
@@ -169,7 +169,6 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 
 	// primitive intersected
 	Material* material = this->primitives[ray->intersectedObjectId]->material;
-	vec4 color = vec4(0, 0, 0, 0);
 	if (material->type == diffuse)
 	{
 		return illuminate(ray, depth);
@@ -184,6 +183,8 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecular)
 	}
 	if (material->type == dielectric)
 	{
+		vec4 color = material->color *0.2;
+
 		Ray* refractionRay = this->computeRefractionRay(ray);
 		if (refractionRay->intersectedObjectId == -2)
 		{
