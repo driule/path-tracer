@@ -231,7 +231,7 @@ void Game::loadNiceScene()
 	scene->camera->right = vec3(1, 0, 0);
 	scene->camera->calculateScreen();
 
-	//scene->loadSkydome("assets/skydome/city.hdr");
+	scene->loadSkydome("assets/skydome/space.hdr");
 
 	// scene lights
 	scene->addLightSource(new SphericalLight(vec3(-5, 30, -20), 2, vec4(1, 1, 1, 1), 125));
