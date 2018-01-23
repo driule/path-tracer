@@ -24,7 +24,7 @@ namespace Tmpl8 {
 #define CLAMP(v,a,b) (MIN((b),MAX((v),(a))))
 
 #define PI					3.14159265358979323846264338327950288419716939937510582097494459072381640628620899862803482534211706798f
-#define INVERSEPI			0.31830988618f;
+#define INVERSEPI			0.31830988618f
 
 #define PREFETCH(x)			_mm_prefetch((const char*)(x),_MM_HINT_T0)
 #define PREFETCH_ONCE(x)	_mm_prefetch((const char*)(x),_MM_HINT_NTA)

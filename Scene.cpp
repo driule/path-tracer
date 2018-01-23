@@ -247,7 +247,7 @@ vec4 Scene::sample(Ray* ray, int depth)
 
 vec4 Scene::sampleSkydome(Ray* ray)
 {
-	float u = fmodf(0.5f * (1.0f + atan2(ray->direction.x, -ray->direction.z) / PI), 1.0f);
+	float u = fmodf(0.5f * (1.0f + atan2(ray->direction.x, -ray->direction.z) * INVERSEPI), 1.0f);
 	float v = acosf(ray->direction.y) * INVERSEPI;
 	int pixel = (int)(u * (float)(this->skydome->width - 1)) + ((int)(v * (float)(this->skydome->height - 1)) * this->skydome->width);
 
