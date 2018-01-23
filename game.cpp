@@ -236,7 +236,7 @@ void Game::loadNiceScene()
 	// scene lights
 	scene->addLightSource(new SphericalLight(vec3(-5, 30, -20), 2, vec4(1, 1, 1, 1), 125));
 	scene->addLightSource(new SphericalLight(vec3(15, 30, -20), 1, vec4(1, 1, 1, 1), 100));
-	scene->addLightSource(new SphericalLight(vec3(0, -10, -20), 2, vec4(1, 1, 1, 1), 25));
+	scene->addLightSource(new SphericalLight(vec3(0, -10, -20), 2, vec4(0.85, 0.83, 0.12, 1), 25));
 
 	// materials
 	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
@@ -280,16 +280,16 @@ void Game::loadNiceScene()
 	// teapots
 	Material* purpleMaterial = new Material(vec4(0.67, 0.37, 0.87, 0), diffuse);
 
-	scene->loadModel("assets/teapot.obj", purpleMaterial, vec3(-10, -7, -30));
-	scene->addPrimitive(new Sphere(whiteMaterial, vec3(-10, -12, -30), 5));
+	scene->loadModel("assets/teapot.obj", purpleMaterial, vec3(-10, -7, -40));
+	scene->addPrimitive(new Sphere(whiteMaterial, vec3(-10, -12, -40), 5));
 
-	scene->loadModel("assets/teapot.obj", redGlassMaterial, vec3(EPSILON, -10, -30));
+	scene->loadModel("assets/teapot.obj", redGlassMaterial, vec3(EPSILON, -10, -50));
 
-	scene->loadModel("assets/teapot.obj", purpleMaterial, vec3(10, -7, -30));
-	scene->addPrimitive(new Sphere(whiteMaterial, vec3(10, -12, -30), 5));
+	scene->loadModel("assets/teapot.obj", purpleMaterial, vec3(10, -7, -40));
+	scene->addPrimitive(new Sphere(whiteMaterial, vec3(10, -12, -40), 5));
 
 	// sphere with torus
-	scene->addPrimitive(new Sphere(redGlassMaterial, vec3(0, 0, -10), 5));
+	scene->addPrimitive(new Sphere(redMaterial, vec3(0, 0, -10), 5));
 	scene->addPrimitive(new Torus(orangeMaterial, 7, 1, vec3(0, 0, -10), vec3(-1, -1.5, 0)));
 
 	// cylinders
