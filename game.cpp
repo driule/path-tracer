@@ -226,7 +226,7 @@ void Game::loadNiceScene()
 	scene->clear();
 	scene->camera->reset();
 
-	scene->camera->position = vec3(0, 10, -60);
+	scene->camera->position = vec3(0, 15, -90);
 	scene->camera->up = vec3(0, 0.9, 0.15);
 	scene->camera->right = vec3(1, 0, 0);
 	scene->camera->calculateScreen();
@@ -289,7 +289,7 @@ void Game::loadNiceScene()
 	scene->addPrimitive(new Sphere(whiteMaterial, vec3(10, -12, -30), 5));
 
 	// sphere with torus
-	scene->addPrimitive(new Sphere(glassMaterial, vec3(0, 0, -10), 5));
+	scene->addPrimitive(new Sphere(redGlassMaterial, vec3(0, 0, -10), 5));
 	scene->addPrimitive(new Torus(orangeMaterial, 7, 1, vec3(0, 0, -10), vec3(-1, -1.5, 0)));
 
 	// cylinders
