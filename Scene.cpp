@@ -24,15 +24,15 @@ void Scene::render(int row)
 		// generate and trace ray
 		Ray* ray = this->camera->generateRay(x, row);
 
-		vec4 color = this->sample(ray, 0, true);
-		/*if (x < SCRWIDTH / 2)
+		vec4 color;// = this->sample(ray, true);
+		if (x < SCRWIDTH / 2)
 		{
 			color = this->sampleNEE(ray, 0);
 		}
 		else
 		{
-			color = this->sample(ray, 0, true);
-		}*/
+			color = this->sample(ray, true);
+		}
 
 		int pixelId = row * SCRWIDTH + x;
 		this->accumulator[pixelId] += color;
@@ -186,11 +186,8 @@ vec4 Scene::sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecul
 	return BGCOLOR;
 }
 
-vec4 Scene::sample(Ray* ray, int depth, bool isLastPrimitiveSpecular)
+vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 {
-	depth += 1;
-	if (depth > 10) return BGCOLOR;
-
 	this->intersectPrimitives(ray);
 	this->intersectLightSources(ray);
 
@@ -211,14 +208,24 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastPrimitiveSpecular)
 
 	// primitive intersected
 	Material* material = this->primitives[ray->intersectedObjectId]->material;
+
+	// kill random rays by russian roullete
+	std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
+	float randomNumber = uniformGenerator01(this->randomNumbersGenerator);
+	float raySurviveProbability = min(1.0f, max(max(material->color.x, material->color.y), material->color.z));
+	if (randomNumber > raySurviveProbability)
+	{
+		return BGCOLOR;
+	}
+
 	if (material->type == diffuse)
 	{
-		return illuminate(ray, depth);
+		return illuminate(ray);
 	}
 	if (material->type == mirror)
 	{
 		Ray* reflectionRay = computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
+		vec4 reflectionColor = this->sample(reflectionRay, true);
 		delete reflectionRay;
 
 		return material->color * reflectionColor;
@@ -235,11 +242,11 @@ vec4 Scene::sample(Ray* ray, int depth, bool isLastPrimitiveSpecular)
 		}
 		else
 		{
-			refractionColor += this->sample(refractionRay, depth, true);
+			refractionColor += this->sample(refractionRay, true);
 		}
 
 		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
+		vec4 reflectionColor = this->sample(reflectionRay, true);
 
 		delete refractionRay;
 		delete reflectionRay;
@@ -259,7 +266,7 @@ vec4 Scene::sampleSkydome(Ray* ray)
 	return this->skydome->buffer[pixel];
 }
 
-vec4 Scene::illuminate(Ray* ray, int depth)
+vec4 Scene::illuminate(Ray* ray)
 {
 	vec3 hitPoint = ray->origin + ray->t * ray->direction;
 
@@ -297,7 +304,7 @@ vec4 Scene::illuminate(Ray* ray, int depth)
 	float PDF = PI / dot(primitiveNormal, diffuseReflectionRay->direction);  // Importance Sampling
 	//float PDF = (2 * PI);
 
-	vec4 indirectIlluminationColor = this->sample(diffuseReflectionRay, depth) * dot(primitiveNormal, diffuseReflectionRay->direction) * PDF * BRDF;
+	vec4 indirectIlluminationColor = this->sample(diffuseReflectionRay, false) * dot(primitiveNormal, diffuseReflectionRay->direction) * PDF * BRDF;
 	delete diffuseReflectionRay;
 
 	return directIlluminationColor + indirectIlluminationColor;

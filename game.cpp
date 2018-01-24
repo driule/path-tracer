@@ -278,7 +278,7 @@ void Game::loadNiceScene()
 	Material* whiteMaterial = new Material(vec4(1, 1, 1, 1), diffuse);
 	Material* wallMaterial = new Material(vec4(0.09, 0.63, 0.52, 1), diffuse);
 
-	Material* glassMaterial = new Material(vec4(0, 0, 0, 1), dielectric);
+	Material* glassMaterial = new Material(vec4(0.5, 0.5, 0.5, 1), dielectric);
 	glassMaterial->refraction = 1.33;
 	glassMaterial->reflection = 0.1;
 
