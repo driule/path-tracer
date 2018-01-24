@@ -204,6 +204,10 @@ void Game::handleInput()
 		frame = 15;
 		this->loadTeapot();
 	}
+	if (GetAsyncKeyState(VK_NUMPAD4))
+	{
+		this->loadSimpleScene();
+	}
 
 	// print camera configuration
 	if (GetAsyncKeyState('C'))
@@ -213,6 +217,37 @@ void Game::handleInput()
 		printf("UP: (%f, %f, %f) \n", scene->camera->up.x, scene->camera->up.y, scene->camera->up.z);
 		printf("RIGHT: (%f, %f, %f) \n", scene->camera->right.x, scene->camera->right.y, scene->camera->right.z);
 	}
+}
+
+void Game::loadSimpleScene()
+{
+	sceneId = 0;
+	cameraSpeed = 1;
+	scene->clear();
+	scene->camera->reset();
+
+	scene->camera->position = vec3(0, 15, -90);
+	scene->camera->up = vec3(0, 0.9, 0.15);
+	scene->camera->right = vec3(1, 0, 0);
+	scene->camera->calculateScreen();
+
+	// lights
+	scene->addLightSource(new SphericalLight(vec3(-5, 10, -20), 2, vec4(1, 1, 1, 1), 50));
+
+	// materials
+	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
+	Material* redMaterial = new Material(vec4(0.8, 0.21, 0.19, 1), diffuse);
+	Material* mirrorMaterial = new Material(vec4(0.75, 0.8, 0.7, 1), mirror);
+	Material* glassMaterial = new Material(vec4(0, 0, 0, 1), dielectric);
+	glassMaterial->refraction = 1.33;
+	glassMaterial->reflection = 0.1;
+
+	// primitives
+	scene->addPrimitive(new Plane(floorMaterial, vec3(50, -10, 10), vec3(0, 1, 0), 100));
+
+	scene->addPrimitive(new Sphere(redMaterial, vec3(-20, -5, -20), 4));
+	scene->addPrimitive(new Sphere(mirrorMaterial, vec3(-5, 0, -20), 5));
+	scene->addPrimitive(new Sphere(glassMaterial, vec3(10, 0, -20), 5));
 }
 
 void Game::loadNiceScene()
