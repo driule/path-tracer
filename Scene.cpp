@@ -24,15 +24,15 @@ void Scene::render(int row)
 		// generate and trace ray
 		Ray* ray = this->camera->generateRay(x, row);
 
-		vec4 color;// = this->sample(ray, 0);
-		if (x < SCRWIDTH / 2)
+		vec4 color = this->sample(ray, 0, true);
+		/*if (x < SCRWIDTH / 2)
 		{
 			color = this->sampleNEE(ray, 0);
 		}
 		else
 		{
-			color = this->sample(ray, 0);
-		}
+			color = this->sample(ray, 0, true);
+		}*/
 
 		int pixelId = row * SCRWIDTH + x;
 		this->accumulator[pixelId] += color;
@@ -186,7 +186,7 @@ vec4 Scene::sampleNEE(Ray* ray, int depth, bool isLastIntersectedPrimitiveSpecul
 	return BGCOLOR;
 }
 
-vec4 Scene::sample(Ray* ray, int depth)
+vec4 Scene::sample(Ray* ray, int depth, bool isLastPrimitiveSpecular)
 {
 	depth += 1;
 	if (depth > 10) return BGCOLOR;
@@ -201,7 +201,12 @@ vec4 Scene::sample(Ray* ray, int depth)
 
 	if (ray->lightIntersected)
 	{
-		return this->lightSources[ray->intersectedObjectId]->color;
+		if (isLastPrimitiveSpecular)
+		{
+			return this->lightSources[ray->intersectedObjectId]->color;
+		}
+
+		return BGCOLOR;
 	}
 
 	// primitive intersected
@@ -213,33 +218,33 @@ vec4 Scene::sample(Ray* ray, int depth)
 	if (material->type == mirror)
 	{
 		Ray* reflectionRay = computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, depth);
+		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
 		delete reflectionRay;
 
 		return material->color * reflectionColor;
 	}
 	if (material->type == dielectric)
 	{
-		vec4 color = material->color * 0.2;
+		vec4 refractionColor = material->color * 0.2;
 
 		Ray* refractionRay = this->computeRefractionRay(ray);
 		if (refractionRay->intersectedObjectId == -2)
 		{
 			delete refractionRay;
-			return color;
+			return refractionColor;
 		}
 		else
 		{
-			color += this->sample(refractionRay, depth);
+			refractionColor += this->sample(refractionRay, depth, true);
 		}
 
 		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, depth);
+		vec4 reflectionColor = this->sample(reflectionRay, depth, true);
 
 		delete refractionRay;
 		delete reflectionRay;
 
-		return material->reflection * reflectionColor + material->color.w * color;
+		return material->reflection * reflectionColor + material->color.w * refractionColor;
 	}
 
 	return BGCOLOR;
