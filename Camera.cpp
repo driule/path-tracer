@@ -34,10 +34,14 @@ void Camera::calculateScreen()
 	//this->bottomLeft = screenCenter + vec3(-1, ASPECT_RATIO, 1);
 }
 
-Ray* Camera::generateRay(int x, int y)
+Ray* Camera::generateRay(int x, int y, std::mt19937 randomNumberGenerator)
 {
+	std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
+	float randomX = uniformGenerator01(randomNumberGenerator);
+	float randomY = uniformGenerator01(randomNumberGenerator);
+
 	vec3 direction = normalize(
-		(this->topLeft + (x / SCRWIDTHf) * (this->topRight - this->topLeft) + (y / SCRHEIGHTf) * (this->bottomLeft - this->topLeft)) - this->position
+		(this->topLeft + (((float)x + randomX) / SCRWIDTHf) * (this->topRight - this->topLeft) + (((float)y + randomY) / SCRHEIGHTf) * (this->bottomLeft - this->topLeft)) - this->position
 	);
 
 	return new Ray(this->position, direction);

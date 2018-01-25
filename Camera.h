@@ -15,7 +15,7 @@ namespace Tmpl8 {
 
 		void reset();
 		void calculateScreen();
-		Ray* generateRay(int x, int y);
+		Ray* generateRay(int x, int y, std::mt19937 randomNumberGenerator);
 	};
 }
 

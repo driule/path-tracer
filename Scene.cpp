@@ -22,7 +22,7 @@ void Scene::render(int row)
 	for (int x = 0; x < SCRWIDTH; x++)
 	{
 		// generate and trace ray
-		Ray* ray = this->camera->generateRay(x, row);
+		Ray* ray = this->camera->generateRay(x, row, this->randomNumbersGenerator);
 
 		vec4 color;// = this->sample(ray, true);
 		if (x < SCRWIDTH / 2)
