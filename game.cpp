@@ -238,7 +238,7 @@ void Game::loadSimpleScene()
 	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
 	Material* redMaterial = new Material(vec4(0.8, 0.21, 0.19, 1), diffuse);
 	Material* mirrorMaterial = new Material(vec4(0.75, 0.8, 0.7, 1), mirror);
-	Material* glassMaterial = new Material(vec4(0, 0, 0, 1), dielectric);
+	Material* glassMaterial = new Material(vec4(1, 1, 1, 1), dielectric);
 	glassMaterial->refraction = 1.33;
 	glassMaterial->reflection = 0.1;
 

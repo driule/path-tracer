@@ -200,7 +200,7 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 	{
 		if (isLastPrimitiveSpecular)
 		{
-			return this->lightSources[ray->intersectedObjectId]->color;
+			return this->lightSources[ray->intersectedObjectId]->color * 2;
 		}
 
 		return BGCOLOR;
@@ -212,7 +212,12 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 	// kill random rays by russian roullete
 	std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
 	float randomNumber = uniformGenerator01(this->randomNumbersGenerator);
-	float raySurviveProbability = min(1.0f, max(max(material->color.x, material->color.y), material->color.z));
+	float raySurviveProbability = min(1, max(max(material->color.x, material->color.y), material->color.z));
+	if (material->type == dielectric)
+	{
+		raySurviveProbability = min(raySurviveProbability, 0.5f);
+	}
+	float energyMultiplier = 1 / raySurviveProbability;
 	if (randomNumber > raySurviveProbability)
 	{
 		return BGCOLOR;
@@ -220,7 +225,7 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 
 	if (material->type == diffuse)
 	{
-		return illuminate(ray);
+		return illuminate(ray) * energyMultiplier;
 	}
 	if (material->type == mirror)
 	{
@@ -228,7 +233,7 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 		vec4 reflectionColor = this->sample(reflectionRay, true);
 		delete reflectionRay;
 
-		return material->color * reflectionColor;
+		return material->color * reflectionColor * energyMultiplier;
 	}
 	if (material->type == dielectric)
 	{
@@ -238,20 +243,20 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 		if (refractionRay->intersectedObjectId == -2)
 		{
 			delete refractionRay;
-			return refractionColor;
+			return refractionColor * energyMultiplier;
 		}
 		else
 		{
 			refractionColor += this->sample(refractionRay, true);
 		}
-
+		
 		Ray* reflectionRay = this->computeReflectionRay(ray);
 		vec4 reflectionColor = this->sample(reflectionRay, true);
 
 		delete refractionRay;
 		delete reflectionRay;
 
-		return material->reflection * reflectionColor + material->color.w * refractionColor;
+		return (material->reflection * reflectionColor + material->color.w * refractionColor)  * energyMultiplier;
 	}
 
 	return BGCOLOR;
