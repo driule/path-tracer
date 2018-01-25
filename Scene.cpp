@@ -200,7 +200,7 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 	{
 		if (isLastPrimitiveSpecular)
 		{
-			return this->lightSources[ray->intersectedObjectId]->color;
+			return this->lightSources[ray->intersectedObjectId]->color * this->lightSources[ray->intersectedObjectId]->intensity;
 		}
 
 		return BGCOLOR;
