@@ -355,7 +355,7 @@ void Game::loadTeddy()
 	scene->camera->right = vec3(-0.77, 0, -0.62);
 	scene->camera->calculateScreen();
 
-	scene->loadSkydome("assets/skydome/clouds.hdr");
+	scene->loadSkydome("assets/skydome/space.hdr");
 
 	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, 20.0), vec4(1, 1, 1, 0), 250));
 
@@ -383,7 +383,7 @@ void Game::loadTeapot()
 	scene->camera->right = vec3(-0.921, 0, -0.387);
 	scene->camera->calculateScreen();
 
-	scene->loadSkydome("assets/skydome/clouds.hdr");
+	scene->loadSkydome("assets/skydome/space.hdr");
 
 	scene->addLightSource(new DirectLight(vec3(-10.0f, 0.0f, 20.0), vec4(1, 1, 1, 0), 250));
 
