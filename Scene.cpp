@@ -24,15 +24,15 @@ void Scene::render(int row)
 		// generate and trace ray
 		Ray* ray = this->camera->generateRay(x, row, this->randomNumbersGenerator);
 
-		vec4 color;// = this->sample(ray, true);
-		if (x < SCRWIDTH / 2)
+		vec4 color = this->sample(ray, true);
+		/*if (x < SCRWIDTH / 2)
 		{
 			color = this->sampleNEE(ray, 0);
 		}
 		else
 		{
 			color = this->sample(ray, true);
-		}
+		}*/
 
 		int pixelId = row * SCRWIDTH + x;
 		this->accumulator[pixelId] += color;
@@ -200,7 +200,7 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 	{
 		if (isLastPrimitiveSpecular)
 		{
-			return this->lightSources[ray->intersectedObjectId]->color * 2;
+			return this->lightSources[ray->intersectedObjectId]->color * this->lightSources[ray->intersectedObjectId]->intensity;
 		}
 
 		return BGCOLOR;
