@@ -21,27 +21,36 @@ void Scene::render(int row)
 {
 	for (int x = 0; x < SCRWIDTH; x++)
 	{
-		// generate and trace ray
-		Ray* ray = this->camera->generateRay(x, row, this->randomNumbersGenerator);
-
-		vec4 color = this->sample(ray, true);
-		/*if (x < SCRWIDTH / 2)
+		// divide pixel into strata
+		vec4 color = vec4(0);
+		for (int i = 0; i < STRATA_SIZE; i++)
 		{
-			color = this->sampleNEE(ray, 0);
+			for (int j = 0; j < STRATA_SIZE; j++)
+			{
+				std::uniform_real_distribution<double> uniformGenerator01(0.0, STRATA_WIDTH);
+				float randomX = uniformGenerator01(this->randomNumbersGenerator) + j * STRATA_WIDTH;
+				float randomY = uniformGenerator01(this->randomNumbersGenerator) + i * STRATA_WIDTH;
+
+				Ray* ray = this->camera->generateRay(x + randomX, row + randomY);
+
+				color += this->sample(ray, true);
+				/*if (x < SCRWIDTH / 2)
+				{
+					color += this->sampleNEE(ray, 0);
+				}
+				else
+				{
+					color += this->sample(ray, true);
+				}*/
+				delete ray;
+			}
 		}
-		else
-		{
-			color = this->sample(ray, true);
-		}*/
-
+		
 		int pixelId = row * SCRWIDTH + x;
-		this->accumulator[pixelId] += color;
+		this->accumulator[pixelId] += color * (STRATA_WIDTH * STRATA_WIDTH);
 
 		// plot pixel with color
-		this->screen->Plot(x, row, this->convertColorToPixel(this->accumulator[pixelId] * this->inversedAccumulatorCounter));
-
-		// clear garbages
-		delete ray;
+		this->screen->Plot(x, row, this->convertColorToPixel(this->accumulator[pixelId] * this->inversedAccumulatorCounter));		
 	}
 }
 
