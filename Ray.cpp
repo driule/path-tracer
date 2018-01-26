@@ -1,6 +1,15 @@
 #include "precomp.h"
 
+Ray::Ray()
+{
+}
+
 Ray::Ray(vec3 origin, vec3 direction)
+{
+	this->create(origin, direction);
+}
+
+void Ray::create(vec3 origin, vec3 direction)
 {
 	this->origin = origin;
 	this->direction = direction;

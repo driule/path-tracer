@@ -27,7 +27,7 @@ void Scene::render(int row)
 		{
 			for (int j = 0; j < STRATA_SIZE; j++)
 			{
-				std::uniform_real_distribution<double> uniformGenerator01(0.0, STRATA_WIDTH);
+				std::uniform_real_distribution<double> uniformGenerator01(0.0, STRATA_WIDTH - EPSILON);
 				float randomX = uniformGenerator01(this->randomNumbersGenerator) + j * STRATA_WIDTH;
 				float randomY = uniformGenerator01(this->randomNumbersGenerator) + i * STRATA_WIDTH;
 
@@ -42,7 +42,7 @@ void Scene::render(int row)
 				{
 					color += this->sample(ray, true);
 				}*/
-				delete ray;
+				//delete ray;
 			}
 		}
 		

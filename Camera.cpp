@@ -3,6 +3,13 @@
 Camera::Camera()
 {
 	this->reset();
+
+	int poolSize = SCRWIDTH * SCRHEIGHT;
+	this->rayPool = new Ray*[poolSize];
+	for (int i = 0; i < poolSize; i++)
+	{
+		this->rayPool[i] = new Ray();
+	}
 }
 
 void Camera::reset()
@@ -40,5 +47,8 @@ Ray* Camera::generateRay(float x, float y)
 		(this->topLeft + (x / SCRWIDTHf) * (this->topRight - this->topLeft) + (y / SCRHEIGHTf) * (this->bottomLeft - this->topLeft)) - this->position
 	);
 
-	return new Ray(this->position, direction);
+	int rayIndex = (int)x + (int)y * SCRWIDTH;
+	this->rayPool[rayIndex]->create(this->position, direction);
+
+	return this->rayPool[rayIndex];
 }
