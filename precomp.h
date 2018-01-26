@@ -22,7 +22,7 @@
 #define MULTITHREADING_ENABLED 1
 #define BVH_ENABLED 1
 
-#define STRATA_SIZE 2
+#define STRATA_SIZE 1
 #define STRATA_WIDTH 1.0f / STRATA_SIZE
 
 enum MaterialType { diffuse, mirror, dielectric };

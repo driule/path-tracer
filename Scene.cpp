@@ -162,7 +162,8 @@ vec4 Scene::illuminate(Ray* ray)
 	Primitive* intersectedPrimitive = this->primitives[ray->intersectedObjectId];
 	vec3 primitiveNormal = intersectedPrimitive->getNormal(hitPoint);
 
-	int randomLightIndex = rand() % this->lightSources.size();
+	std::uniform_int_distribution<int> randomLightUniformGenerator(0, this->lightSources.size() - 1);
+	int randomLightIndex = randomLightUniformGenerator(this->randomNumbersGenerator);
 	LightSource* randomLight = this->lightSources[randomLightIndex];
 
 	vec3 lightDirection = randomLight->getRandomPointOnLight(this->randomNumbersGenerator) - hitPoint;
