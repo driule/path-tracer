@@ -123,33 +123,28 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 	{
 		std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
 		float randomNumber = uniformGenerator01(this->randomNumbersGenerator);
+		float refractionProbability = this->calculateRefractionProbability(ray);
 
-		vec4 materialColor = material->color * 0.05f;
-		if (randomNumber > material->reflection)
+		if (randomNumber > refractionProbability)
 		{
-			vec4 refractionColor = materialColor;
 			Ray* refractionRay = this->computeRefractionRay(ray);
 			if (refractionRay->intersectedObjectId == -2)
 			{
 				delete refractionRay;
-				return refractionColor * energyMultiplier;
+				return BGCOLOR;
 			}
-			else
-			{
-				refractionColor += this->sample(refractionRay, true);
-			}
+
+			vec4 refractionColor = this->sample(refractionRay, true) * material->color;
 			delete refractionRay;
 
-			return (material->color.w * refractionColor) * energyMultiplier;
+			return refractionColor * energyMultiplier;
 		}
-		else
-		{
-			Ray* reflectionRay = this->computeReflectionRay(ray);
-			vec4 reflectionColor = materialColor + this->sample(reflectionRay, true);
-			delete reflectionRay;
 
-			return (material->reflection * reflectionColor) * energyMultiplier;
-		}
+		Ray* reflectionRay = this->computeReflectionRay(ray);
+		vec4 reflectionColor = this->sample(reflectionRay, true) * material->color;
+		delete reflectionRay;
+
+		return reflectionColor * energyMultiplier;
 	}
 
 	return BGCOLOR;
@@ -269,10 +264,42 @@ Ray* Scene::computeRefractionRay(Ray* ray)
 	else
 	{
 		vec3 direction = eta * ray->direction + (eta * cosi - sqrtf(k)) * n;
-		vec3 origin = hitPoint + direction * EPSILON;
+		//vec3 origin = hitPoint + direction * EPSILON;
+
+		bool outside = dot(ray->direction, N) < 0;
+		vec3 bias = EPSILON * N;
+		vec3 origin = outside ? hitPoint - bias : hitPoint + bias;
 
 		return new Ray(origin, direction);
 	}
+}
+
+float Scene::calculateRefractionProbability(Ray* ray)
+{
+	vec3 hitPoint = ray->origin + ray->direction * ray->t;
+	Primitive* intersectedPrimitive = this->primitives[ray->intersectedObjectId];
+
+	float cosi = CLAMP(-1, 1, hitPoint.dot(intersectedPrimitive->getNormal(hitPoint)));
+	float etai = 1, etat = intersectedPrimitive->material->refraction;
+	if (cosi > 0) { std::swap(etai, etat); }
+
+	float sint = etai / etat * sqrtf(max(0.f, 1 - cosi * cosi));
+
+	float refractionProbability = 0;
+	if (sint >= 1)
+	{
+		refractionProbability = 1;
+	}
+	else
+	{
+		float cost = sqrtf(max(0.f, 1 - sint * sint));
+		cosi = fabsf(cosi);
+		float Rs = ((etat * cosi) - (etai * cost)) / ((etat * cosi) + (etai * cost));
+		float Rp = ((etai * cosi) - (etat * cost)) / ((etai * cosi) + (etat * cost));
+		refractionProbability = (Rs * Rs + Rp * Rp) / 2;
+	}
+
+	return refractionProbability;
 }
 
 void Scene::intersectPrimitives(Ray* ray, bool isShadowRay)
