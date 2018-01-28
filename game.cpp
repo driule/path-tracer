@@ -231,6 +231,8 @@ void Game::loadSimpleScene()
 	scene->camera->right = vec3(0.9, 0, 0);
 	scene->camera->calculateScreen();
 
+	scene->loadSkydome("assets/skydome/space.hdr");
+
 	// lights
 	scene->addLightSource(new SphericalLight(vec3(-5, 40, -20), 4, vec4(1, 1, 1, 1), 25));
 
