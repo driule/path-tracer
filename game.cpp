@@ -29,7 +29,7 @@ void Game::Init()
 	printf("Numpad '+' and '-' to change FOV\n");
 	printf("R to reset camera\n");
 	printf("C to print camera configuration\n");
-	printf("Numpad 1, 2, 3 to toggle between scenes\n");
+	printf("Numpad 1, 2, 3, 4 to toggle between scenes\n");
 	printf("--------------------------------------------------\n");
 
 	// initialize threads
@@ -226,28 +226,35 @@ void Game::loadSimpleScene()
 	scene->clear();
 	scene->camera->reset();
 
-	scene->camera->position = vec3(0, 15, -90);
+	scene->camera->position = vec3(0, 11, -67);
 	scene->camera->up = vec3(0, 0.9, 0.15);
-	scene->camera->right = vec3(1, 0, 0);
+	scene->camera->right = vec3(0.9, 0, 0);
 	scene->camera->calculateScreen();
 
 	// lights
-	scene->addLightSource(new SphericalLight(vec3(-5, 10, -20), 2, vec4(1, 1, 1, 1), 50));
+	scene->addLightSource(new SphericalLight(vec3(-5, 40, -20), 4, vec4(1, 1, 1, 1), 25));
 
 	// materials
 	Material* floorMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
+	Material* wallMaterial = new Material(vec4(0.5, 0.5, 0.5, 1.0), diffuse);
+
 	Material* redMaterial = new Material(vec4(0.8, 0.21, 0.19, 1), diffuse);
 	Material* mirrorMaterial = new Material(vec4(0.75, 0.8, 0.7, 1), mirror);
-	Material* glassMaterial = new Material(vec4(1, 1, 1, 1), dielectric);
+
+	Material* glassMaterial = new Material(vec4(0.25, 0.75, 0.25, 1), dielectric);
 	glassMaterial->refraction = 1.33;
-	glassMaterial->reflection = 0.1;
+	glassMaterial->reflection = 0.5;
 
-	// primitives
-	scene->addPrimitive(new Plane(floorMaterial, vec3(50, -10, 10), vec3(0, 1, 0), 100));
+	// room
+	int roomWidth = 50;
+	int roomHeigth = 50;
 
-	scene->addPrimitive(new Sphere(redMaterial, vec3(-20, -5, -20), 4));
-	scene->addPrimitive(new Sphere(mirrorMaterial, vec3(-5, 0, -20), 5));
-	scene->addPrimitive(new Sphere(glassMaterial, vec3(10, 0, -20), 5));
+	// floor
+	scene->addPrimitive(new Plane(floorMaterial, vec3(roomWidth, -10, 10), vec3(0, 1, 0), 100));
+
+	scene->addPrimitive(new Sphere(mirrorMaterial, vec3(-5, 0, -10), 5));
+	scene->addPrimitive(new Sphere(redMaterial, vec3(-5, 0, -20), 4));
+	scene->addPrimitive(new Sphere(glassMaterial, vec3(-5, -5, -30), 5));
 }
 
 void Game::loadNiceScene()

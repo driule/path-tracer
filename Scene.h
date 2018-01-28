@@ -56,6 +56,7 @@ namespace Tmpl8 {
 		Ray* computeDiffuseReflectionRay(Ray* ray);
 		Ray* computeReflectionRay(Ray* ray);
 		Ray* computeRefractionRay(Ray* ray);
+		float calculateRefractionProbability(Ray* ray);
 		void intersectPrimitives(Ray* ray, bool isShadowRay = false);
 		void intersectLightSources(Ray* ray);
 

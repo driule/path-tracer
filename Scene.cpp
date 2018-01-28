@@ -121,26 +121,35 @@ vec4 Scene::sample(Ray* ray, bool isLastPrimitiveSpecular)
 	}
 	if (material->type == dielectric)
 	{
-		vec4 refractionColor = material->color * 0.2;
+		std::uniform_real_distribution<double> uniformGenerator01(0.0, 1.0);
+		float randomNumber = uniformGenerator01(this->randomNumbersGenerator);
 
-		Ray* refractionRay = this->computeRefractionRay(ray);
-		if (refractionRay->intersectedObjectId == -2)
+		vec4 materialColor = material->color * 0.05f;
+		if (randomNumber > material->reflection)
 		{
+			vec4 refractionColor = materialColor;
+			Ray* refractionRay = this->computeRefractionRay(ray);
+			if (refractionRay->intersectedObjectId == -2)
+			{
+				delete refractionRay;
+				return refractionColor * energyMultiplier;
+			}
+			else
+			{
+				refractionColor += this->sample(refractionRay, true);
+			}
 			delete refractionRay;
-			return refractionColor * energyMultiplier;
+
+			return (material->color.w * refractionColor) * energyMultiplier;
 		}
 		else
 		{
-			refractionColor += this->sample(refractionRay, true);
+			Ray* reflectionRay = this->computeReflectionRay(ray);
+			vec4 reflectionColor = materialColor + this->sample(reflectionRay, true);
+			delete reflectionRay;
+
+			return (material->reflection * reflectionColor) * energyMultiplier;
 		}
-		
-		Ray* reflectionRay = this->computeReflectionRay(ray);
-		vec4 reflectionColor = this->sample(reflectionRay, true);
-
-		delete refractionRay;
-		delete reflectionRay;
-
-		return (material->reflection * reflectionColor + material->color.w * refractionColor)  * energyMultiplier;
 	}
 
 	return BGCOLOR;
